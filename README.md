@@ -55,6 +55,81 @@ Follow these steps to get the application up and running:
 - `src/index.js`: Entry point for the Node.js server.
 - `package.json`: Lists the project's dependencies and scripts.
 
+## Main Logic and Important Code Explanation
+
+### Server-Side (Node.js)
+
+The server-side logic is implemented in `src/index.js`. Here are some key components:
+
+1. **Setting up the server**:
+    ```javascript
+    const express = require('express');
+    const http = require('http');
+    const socketIo = require('socket.io');
+
+    const app = express();
+    const server = http.createServer(app);
+    const io = socketIo(server);
+    ```
+
+    - **Express.js** is used to create the server.
+    - **Socket.io** is used for real-time communication between clients.
+
+2. **Serving static files**:
+    ```javascript
+    app.use(express.static('public'));
+    ```
+
+    - Static assets from the `public` directory are served to the clients.
+
+3. **Handling socket connections**:
+    ```javascript
+    io.on('connection', (socket) => {
+        console.log('A user connected');
+
+        socket.on('disconnect', () => {
+            console.log('User disconnected');
+        });
+
+        // Additional event handlers
+    });
+    ```
+
+    - Handles new connections and disconnections.
+    - Additional events can be handled within the connection callback.
+
+### Client-Side
+
+The client-side logic is implemented in `public/script.js`. Here are some key components:
+
+1. **Connecting to the server**:
+    ```javascript
+    const socket = io();
+    ```
+
+    - Establishes a connection to the server using Socket.io.
+
+2. **Handling game state**:
+    ```javascript
+    socket.on('gameState', (state) => {
+        // Update UI based on the game state
+    });
+    ```
+
+    - Listens for the `gameState` event from the server and updates the UI accordingly.
+
+3. **Sending player moves**:
+    ```javascript
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.addEventListener('click', () => {
+            const cellIndex = cell.getAttribute('data-index');
+            socket.emit('playerMove', cellIndex);
+        });
+    });
+    ```
+
+    - When a player clicks on a cell, the move is sent to the server.
+
 ## Contributing
 
 We welcome contributions to enhance the Tic-Tac-Toe game. Please follow these steps to contribute:
@@ -73,11 +148,3 @@ We welcome contributions to enhance the Tic-Tac-Toe game. Please follow these st
     git push origin feature/your-feature-name
     ```
 5. **Create a pull request**.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any inquiries or issues, please open an [issue](https://github.com/ridwansulaiman/tic-tac-toe/issues) or contact the repository owner.
